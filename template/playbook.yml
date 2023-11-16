@@ -1,0 +1,32 @@
+- name: "{{ playbook_name }}execution"
+  hosts: "{{ hosts }}"
+  gather_facts: "{{ gather_facts }}"
+  connection: "{{ connection_local }}"
+
+  tasks:
+    # Begin the check mode block here
+    - name: "{{ playbook_name }} check_mode"
+      register: "{{ register }}"
+      check_mode: true
+      "{{ module }}": &module_params
+   {% for item in module_input|dict2items %}
+     {{ item.key }}: begin {{ item.value }} end
+   {% endfor %}
+   "{{ failed_when }}"
+    "{{ failed_when_check_conditions }}"
+
+    # Begin the normal mode block here
+    - name: "{{ playbook_name }} normal_mode"
+      register: "{{ register }}"
+      "{{ module }}":
+        <<: *module_params
+      "{{ failed_when }}"
+"{{ failed_when_conditions }}"
+
+    # Begin the idempotency mode block here
+    - name: "{{ playbook_name }} idempotency_mode"
+      register: "{{ register }}"
+      "{{ module }}":
+        <<: *module_params
+      "{{ failed_when }}"
+    "{{ failed_when_idempotent_conditions }}"

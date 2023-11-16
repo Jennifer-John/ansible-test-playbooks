@@ -1,0 +1,47 @@
+# Test code for the Dell OpenManage modules
+# Copyright (C) 2023 Dell Inc. or its subsidiaries. All Rights Reserved.
+
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+---
+- block:
+    # Begin the check mode block here
+    - name: "{{ playbook_name }} check_mode"
+      register: "{{ register }}"
+      check_mode: true
+      "{{ module }}": &module_params
+   {% for item in module_input|dict2items %}
+     {{ item.key }}: begin {{ item.value }} end
+   {% endfor %}
+
+    - name: "{{ playbook_name }} assert check_mode"
+      ansible.builtin.assert:
+        that:
+    {% for item in asserts_check_mode %}
+      - {{ item }}
+    {% endfor %}
+
+    # Begin the normal mode block here
+    - name: "{{ playbook_name }} normal_mode"
+      register: "{{ register }}"
+      "{{ module }}":
+        <<: *module_params
+
+    - name: "{{ playbook_name }} assert normal_mode"
+      ansible.builtin.assert:
+        that:
+    {% for item in asserts_normal_mode %}
+      - {{ item }}
+    {% endfor %}
+
+    # Begin the idempotency mode block here
+    - name: "{{ playbook_name }} idempotency_mode"
+      register: "{{ register }}"
+      "{{ module }}":
+        <<: *module_params
+
+    - name: "{{ playbook_name }} assert idempotency_mode"
+      ansible.builtin.assert:
+        that:
+    {% for item in asserts_idempotency_mode %}
+      - {{ item }}
+    {% endfor %}

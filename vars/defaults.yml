@@ -1,0 +1,10 @@
+hosts: "localhost"
+gather_facts: false
+connection_local: "local"
+collection: dellemc.openmanage
+register: result
+failed_when: "failed_when: >"
+negative: negative
+quotes: !unsafe '"\""'
+begin_quotes: !unsafe '"{{'
+end_quotes: !unsafe '}}'
