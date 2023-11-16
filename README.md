@@ -1,5 +1,5 @@
 # ansible-test-playbooks
-Generate ansible test playbooks based on template
+Generate ansible test playbooks based on template (template/playbook.yml)
 
 Execute playbook to generate test playbooks
   - ansible-playbook tc_gen.yml 
