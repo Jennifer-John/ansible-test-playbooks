@@ -1,4 +1,4 @@
-idrac_ip
-idrac_user
-idrac_password
+array_ip
+user
+password
 validate_certs
