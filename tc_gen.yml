@@ -4,6 +4,7 @@
   become: yes
    
   tasks:
+  # Uncomment below to generate testcases
   # - name: Generate testcases
   #   command: python3 generate_cases.py
 
