@@ -26,9 +26,6 @@
   when: '":" in item'
   with_items: "{{ module_keys.split() }}"
 
-- debug:
-    msg: "Module input is {{ module_input }}"
-
 - name: Generate testcases
   include_tasks: tc_gen_failed_when.yml
 
