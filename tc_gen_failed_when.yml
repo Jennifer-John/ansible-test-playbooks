@@ -1,0 +1,61 @@
+- name: Unset variables
+  set_fact:
+    failed_when_conditions: ""
+    module_failed_when: {}
+    failed_when_input1: "{{ failed_when_input }}"
+    failed_when_input2: ""
+
+- set_fact: 
+    failed_when_input1: "{{ failed_when_input|replace(keyword, delimiter) }}"
+  vars:
+    keyword: " is not "
+    delimiter: "!="
+  when: failed_when_input and 'keyword in failed_when_input'
+
+- debug:
+    msg: "{{ failed_when_input1.split() }}"
+
+- set_fact: 
+    failed_when_input2: "{{ failed_when_input1|replace(keyword, delimiter) }}"
+  vars:
+    keyword: " is "
+    delimiter: "=="
+  when: failed_when_input1 and 'keyword in failed_when_input1'
+
+# failed when for the negative case
+- set_fact:
+    failed_when_input3: "{{ failed_when_input1 }}"
+    not_in_present_FW: true
+  vars:
+    keyword: " not in "
+  when: failed_when_input and 'keyword in failed_when_input'
+
+- name: Set negative flag when negative keyword exists in the playbook_input
+  set_fact:
+    negative_tc: true
+  when: "'negative' in playbook_input | lower"
+
+# Updating the module_failed_when for the negative case
+- name: Updating the module_failed_when
+  set_fact:
+    failed_when_conditions: "{{ failed_when_conditions|default('') + '      {{failed_when_input3}} or\n' }}"
+  when: not_in_present_FW is defined and negative_tc is defined
+
+- set_fact:
+    module_failed_when: "{{ module_failed_when|default({}) | combine( {item.split('!=')[0]|trim: item.split('!=')[1]|trim} ) | from_yaml }}"
+  when: '"!=" in item'
+  with_items: "{{ failed_when_input1.split() }}"
+
+- set_fact:
+    module_failed_when: "{{ module_failed_when | combine( {item.split('==')[0]|trim: item.split('==')[1]|trim} ) | from_yaml }}"
+  when: '"==" in item'
+  with_items: "{{ failed_when_input2.split() }}"
+
+- set_fact:
+    failed_when_conditions: "{{ failed_when_conditions|default('') + '        (' + register + '.' + item.key + ' != ' + item.value + ') or\n' }}"
+  with_items: "{{ module_failed_when|dict2items }}"
+
+- set_fact:
+    failed_when_conditions: "{{ failed_when_conditions[:-4] }}"
+    failed_when_check_conditions: "{{'(' + register + '.changed != True)'}}"
+    failed_when_idempotent_conditions: "{{'(' + register + '.changed == True)'}}"

@@ -1,0 +1,70 @@
+- name: Unset variables
+  set_fact:
+    module_input:
+    module_keys: ""
+
+- set_fact:
+    module: "{{ collection }}.{{ playbook_input.split()[0] }}"
+
+- set_fact: 
+    module_keys: "{{ playbook_input|replace(keyword, delimiter) }}"
+  vars:
+    keyword: " as "
+    delimiter: ":"
+  when: 'keyword in playbook_input'
+
+- set_fact:
+    module_input: "{{ module_input|default({}) | combine( {item|trim: item|trim} ) | from_yaml }}"
+  with_items: "{{ connection.split() }}"
+
+- set_fact:
+    module_input: "{{ module_input|default({}) | combine( {item|trim: item|trim} ) | from_yaml }}"
+  with_items: "{{ required.split() }}"
+
+- set_fact:
+    module_input: "{{ module_input|default({}) | combine( {item.split(':')[0]|trim: item.split(':')[1]|trim} ) | from_yaml }}"
+  when: '":" in item'
+  with_items: "{{ module_keys.split() }}"
+
+- debug:
+    msg: "Module input is {{ module_input }}"
+
+- name: Generate testcases
+  include_tasks: tc_gen_failed_when.yml
+
+- name: Generate testcases
+  include_tasks: tc_gen_assert_cond.yml
+
+- template:
+    src: template/playbook.yml
+    dest: output/{{ playbook_name }}.yml
+
+- name: Read file content
+  slurp:
+    src: output/{{ playbook_name }}.yml
+  register: file_content
+
+- name: Remove trailing spaces from lines
+  replace:
+    path: "output/{{ playbook_name }}.yml"
+    regexp: ' +$'
+    replace: ''
+  when: file_content.content is defined
+
+- name: Explicitly specifying named matched groups1
+  ansible.builtin.replace:
+    path: output/{{ playbook_name }}.yml
+    regexp: '\"'
+    replace: ''
+
+- name: Explicitly specifying named matched groups2
+  ansible.builtin.replace:
+    path: output/{{ playbook_name }}.yml
+    regexp: 'begin'
+    replace: !unsafe '"{{'
+
+- name: Explicitly specifying named matched groups3
+  ansible.builtin.replace:
+    path: output/{{ playbook_name }}.yml
+    regexp: 'end'
+    replace: !unsafe '}}"'

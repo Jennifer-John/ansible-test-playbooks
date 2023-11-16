@@ -1,0 +1,32 @@
+- name: Testcase generation
+  hosts: localhost
+  gather_facts: yes
+  become: yes
+   
+  tasks:
+  # - name: Generate testcases
+  #   command: python3 generate_cases.py
+
+  - read_csv:
+      path: test-cases.csv
+    register: testcases
+
+  - set_fact:
+      connection: "{{ lookup('file','{{ playbook_dir }}/template/connection.yml') | from_yaml }}"
+  
+  - set_fact:
+      required: "{{ lookup('file','{{ playbook_dir }}/template/required.yml') | from_yaml }}"
+
+  - name: Include vars file
+    include_vars: ../vars/defaults.yml
+
+  - name: Generate testcases
+    include_tasks: tc_set_fact.yml
+    loop: "{{ testcases.list }}"
+    vars:
+      playbook_name: "{{ item.ID}}_{{ item.TC_NAME }}"
+      playbook_input: "{{ item.TESTCASE }}"
+      failed_when_input: "{{ item.FAILED_WHEN }}"
+      check_mode_asserts: "{{ item.CHECK_MODE_ASSERTS }}"
+      normal_asserts: "{{ item.NORMAL_MODE_ASSERTS }}"
+      idempotency_asserts: "{{ item.IDEMPOTENCY_MODE_ASSERTS }}"

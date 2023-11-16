@@ -1,0 +1,2 @@
+ID,TC_NAME,TESTCASE,FAILED_WHEN,CHECK_MODE_ASSERTS,NORMAL_MODE_ASSERTS,IDEMPOTENCY_MODE_ASSERTS
+1,TC,storage_container create with all_params storage_container_name as storage_container_name_1 quota as quota_1 quota_unit as quota_unit_1 storage_protocol as storage_protocol_1 high_water_mark as high_water_mark_1 [check_mode] [idempotency],storage_container_details.name is not storage_container_name_1 or storage_container_details.quota is not quota_1*1024*1024*1024 or storage_container_details.storage_protocol is not storage_protocol_1 or changed is not true,,,

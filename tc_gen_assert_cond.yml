@@ -1,0 +1,12 @@
+- name: Unset variables
+  set_fact:
+    asserts_check_mode: {}
+    asserts_normal_mode: {}
+    asserts_idempotency_mode: {}
+    key: "and"
+
+- name: Split line and convert to list
+  set_fact:
+    asserts_check_mode: "{{ check_mode_asserts.split(key) | map('trim') | list }}"
+    asserts_normal_mode: "{{ normal_asserts.split(key) | map('trim') | list }}"
+    asserts_idempotency_mode: "{{ idempotency_asserts.split(key) | map('trim') | list }}"
