@@ -6,6 +6,7 @@ Execute playbook to generate test playbooks
 
 Pre-requisites:
 Populate testcases with failed_when or assert conditions in test-cases.csv file
+
 Update defaults in 
-  - vars/defaults.yml
-  - template/connection.yml
+vars/defaults.yml
+template/connection.yml
