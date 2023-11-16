@@ -2,7 +2,7 @@
 Generate ansible test playbooks based on template
 
 Execute playbook to generate test playbooks
-  ansible-playbook tc_gen.yml 
+  - ansible-playbook tc_gen.yml 
 
 Pre-requisites:
 - Populate testcases with failed_when or assert conditions in test-cases.csv file
