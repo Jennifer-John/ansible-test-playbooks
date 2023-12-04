@@ -5,7 +5,8 @@ Execute playbook to generate test playbooks
   - ansible-playbook tc_gen.yml 
 
 Pre-requisites:
-- Populate testcases with failed_when or assert conditions in test-cases.csv file
+- Populate testcases with failed_when or assert conditions in test-cases.csv file.
+- Create an empty directory named `output`.
 - Update defaults in 
    - vars/defaults.yml
    - template/connection.yml
